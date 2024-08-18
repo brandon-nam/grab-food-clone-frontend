@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.btn {
+    @apply text-base font-medium rounded-lg p-3;
+}
+
+.input {
+    @apply border-solid border-2 border-gray-200 px-5 py-3 rounded-lg focus:outline-none appearance-none
+}
