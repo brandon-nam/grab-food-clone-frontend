@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { gql } from "../__generated__";
 import { FormError } from "../components/form-error";
 import grab from "../images/grab.svg";
-import { Link, redirect } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Button } from "../components/button";
 import { LoginMutation, LoginMutationVariables } from "../__generated__/graphql";
@@ -27,6 +27,7 @@ interface IForm {
 }
 
 export const Login = () => {
+    const navigate = useNavigate();
     const onCompleted = (data: LoginMutation) => {
         const {
             login: { ok, token },
@@ -37,7 +38,7 @@ export const Login = () => {
             localStorage.setItem(TOKEN, token);
             authTokenVar(token);
             isLoggedInVar(true);
-            redirect("http://localhost:3000");
+            navigate("/");
         }
     };
 
