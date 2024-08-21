@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { gql } from "../__generated__";
 import { FormError } from "../components/form-error";
 import grab from "../images/grab.svg";
-import { Link } from "react-router-dom";
+import { Link, redirect } from "react-router-dom";
 import { Helmet } from "react-helmet";
 import { Button } from "../components/button";
 import { LoginMutation, LoginMutationVariables } from "../__generated__/graphql";
@@ -32,9 +32,12 @@ export const Login = () => {
             login: { ok, token },
         } = data;
         if (ok && token) {
+            console.log(ok);
+            console.log(token);
             localStorage.setItem(TOKEN, token);
             authTokenVar(token);
             isLoggedInVar(true);
+            redirect("http://localhost:3000");
         }
     };
 

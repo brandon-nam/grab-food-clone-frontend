@@ -1,27 +1,42 @@
 import React from "react";
 import { authTokenVar, isLoggedInVar } from "../apollo";
-import { gql, useQuery } from "@apollo/client";
-import { MeQuery } from "../__generated__/graphql";
-import { Button } from "../components/button";
 import { redirect, Route, Routes } from "react-router-dom";
 import { BrowserRouter as Router } from "react-router-dom";
-import { Restaurants } from "../pages/client/restaurant";
-import { Header } from "../components/header";
 import { useMe } from "../hooks/useMe";
+import { ConfirmEmail } from "../pages/user/confirm-email";
+import { EditProfile } from "../pages/user/edit-profile";
+import { TOKEN } from "../constants";
+import { Index } from "../pages";
+import { Category } from "../pages/client/category";
+import { Restaurant } from "../pages/client/restaurant";
+import { MyRestaurants } from "../pages/owner/my-restaurants";
+import { NotFound } from "../pages/404";
+import { AddRestaurant } from "../pages/owner/add-restaurants";
 
-const ClientRoutes = (
-    <Route path="/">
-        <Restaurants />
-    </Route>
-);
+const ClientRoutes = [
+    <Route key={2} path="/confirm" element={<ConfirmEmail />} />,
+    <Route key={3} path="/edit-profile" element={<EditProfile />} />,
+    <Route key={4} path="/category/:slug" element={<Category />} />,
+];
 
+const OwnerRoutes = [
+    <Route key={6} path="/my-restaurants" element={<MyRestaurants />} />,
+    <Route key={7} path="/add-restaurant" element={<AddRestaurant />} />,
+];
+
+const CommonRoutes = [
+    <Route key={1} path="/" element={<Index />} />,
+    <Route key={5} path="/restaurant/:id" element={<Restaurant />} />,
+    <Route key={6} path="*" element={<NotFound />} />,
+];
 
 export const LoggedInRouter = () => {
-    const onClick = () => {
-        isLoggedInVar(false);
-        authTokenVar("");
-        return redirect("/login");
-    };
+    // const onClick = () => {
+    //     localStorage.setItem(TOKEN, "");
+    //     isLoggedInVar(false);
+    //     authTokenVar("");
+    //     return redirect("/login");
+    // };
 
     const { data, loading, error } = useMe();
 
@@ -33,13 +48,12 @@ export const LoggedInRouter = () => {
         );
     }
     return (
-        <div>
-            <Router>
-                <Header />
-                <Routes>{data.me.role === "Client" && ClientRoutes}</Routes>
-            </Router>
-            <h1>{data.me.role}</h1>
-            <Button actionText="Log Out" canClick={true} loading={false} onClick={onClick}></Button>
-        </div>
+        <Router>
+            <Routes>
+                {CommonRoutes}
+                {data.me.role === "Client" && ClientRoutes}
+                {data.me.role === "Owner" && OwnerRoutes}
+            </Routes>
+        </Router>
     );
 };

@@ -10,6 +10,9 @@ module.exports = {
       },
       maxWidth: {
         "custom-xl": "1200px"
+      },
+      width: {
+        "custom-lg": "515px"
       }
     },
   },
