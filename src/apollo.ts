@@ -18,7 +18,7 @@ export const restaurantIdVar = makeVar<number>(0);
 
 const wsLink = new GraphQLWsLink(
     createClient({
-        url: "ws://localhost:4000/graphql",
+        url: process.env.NODE_ENV === "production" ? "wss://grab-food-clone-669051cc17fe.herokuapp.com/graphql": "ws://localhost:4000/graphql",
         connectionParams: {
             "X-JWT": authTokenVar() || ""
         },
@@ -26,7 +26,7 @@ const wsLink = new GraphQLWsLink(
 );
 
 const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql",
+    uri: process.env.NODE_ENV === "production"? "https://grab-food-clone-669051cc17fe.herokuapp.com/graphql" : "http://localhost:4000/graphql",
 });
 
 const authLink = setContext((_, { headers }) => {
