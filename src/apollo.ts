@@ -1,14 +1,29 @@
-import { ApolloClient, InMemoryCache, ApolloProvider, gql, makeVar, createHttpLink } from "@apollo/client";
+import { ApolloClient, InMemoryCache, ApolloProvider, gql, makeVar, createHttpLink, split } from "@apollo/client";
 import { TOKEN } from "./constants";
 import { setContext } from "@apollo/client/link/context";
+import { CreateOrderItemInput } from "./__generated__/graphql";
+import { DisplayedItem } from "./components/cart";
+import { getMainDefinition } from "@apollo/client/utilities";
+import { createClient } from "graphql-ws";
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions';
 
 
 const token = localStorage.getItem(TOKEN);
 export const isLoggedInVar = makeVar(Boolean(token));
 export const authTokenVar = makeVar(token);
+export const orderItemsVar = makeVar<CreateOrderItemInput[]>([]);
+export const displayedItemsVar = makeVar<DisplayedItem[]>([]);
+export const orderPriceVar = makeVar<number>(0);
+export const restaurantIdVar = makeVar<number>(0);
 
-console.log("default isloggedin: ", isLoggedInVar());
-console.log("default authToken: ", authTokenVar());
+const wsLink = new GraphQLWsLink(
+    createClient({
+        url: "ws://localhost:4000/graphql",
+        connectionParams: {
+            "X-JWT": authTokenVar() || ""
+        },
+    })
+);
 
 const httpLink = createHttpLink({
     uri: "http://localhost:4000/graphql",
@@ -23,8 +38,17 @@ const authLink = setContext((_, { headers }) => {
     };
 });
 
-export const client = new ApolloClient({
-    link: authLink.concat(httpLink),
+const splitLink = split(
+    ({ query }) => {
+        const definition = getMainDefinition(query);
+        return definition.kind === "OperationDefinition" && definition.operation === "subscription";
+    },
+    wsLink,
+    authLink.concat(httpLink)
+);
+
+export default new ApolloClient({
+    link: splitLink,
     cache: new InMemoryCache({
         typePolicies: {
             Query: {
@@ -37,6 +61,26 @@ export const client = new ApolloClient({
                     authToken: {
                         read(_, { variables }) {
                             return authTokenVar();
+                        },
+                    },
+                    orderItems: {
+                        read(_, { variables }) {
+                            return orderItemsVar();
+                        },
+                    },
+                    displayedItems: {
+                        read(_, { variables }) {
+                            return displayedItemsVar();
+                        },
+                    },
+                    orderPrice: {
+                        read(_, { variables }) {
+                            return orderPriceVar();
+                        },
+                    },
+                    restaurantId: {
+                        read(_, { variables }) {
+                            return restaurantIdVar();
                         },
                     },
                 },

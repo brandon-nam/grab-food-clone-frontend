@@ -1,10 +1,10 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import ReactDOM, { createRoot } from "react-dom/client";
 import { ApolloClient, InMemoryCache, ApolloProvider, gql } from "@apollo/client";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import "./styles/styles.css";
-import { client } from "./apollo";
+import client from "./apollo";
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(

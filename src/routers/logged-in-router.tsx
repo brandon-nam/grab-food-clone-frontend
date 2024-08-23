@@ -12,8 +12,13 @@ import { Restaurant } from "../pages/client/restaurant";
 import { MyRestaurants } from "../pages/owner/my-restaurants";
 import { NotFound } from "../pages/404";
 import { AddRestaurant } from "../pages/owner/add-restaurants";
+import { OrderReview } from "../pages/client/order-review";
+import { ConfirmedOrder } from "../pages/user/confirmed-order";
+import { Dashboard } from "../pages/driver/dashboard";
+import { UserRole } from "../__generated__/graphql";
 
 const ClientRoutes = [
+    <Route key={1} path="/order-review" element={<OrderReview/>}/>,
     <Route key={2} path="/confirm" element={<ConfirmEmail />} />,
     <Route key={3} path="/edit-profile" element={<EditProfile />} />,
     <Route key={4} path="/category/:slug" element={<Category />} />,
@@ -24,10 +29,15 @@ const OwnerRoutes = [
     <Route key={7} path="/add-restaurant" element={<AddRestaurant />} />,
 ];
 
+const DriverRoutes = [
+    <Route key={1} path="/dashboard" element={<Dashboard/>}/>
+]
+
 const CommonRoutes = [
-    <Route key={1} path="/" element={<Index />} />,
-    <Route key={5} path="/restaurant/:id" element={<Restaurant />} />,
-    <Route key={6} path="*" element={<NotFound />} />,
+    <Route key={1} path="/confirmed-order/:id" element={<ConfirmedOrder/>} />,
+    <Route key={2} path="/" element={<Index />} />,
+    <Route key={3} path="/restaurant/:id" element={<Restaurant />} />,
+    <Route key={4} path="*" element={<NotFound />} />,
 ];
 
 export const LoggedInRouter = () => {
@@ -51,8 +61,9 @@ export const LoggedInRouter = () => {
         <Router>
             <Routes>
                 {CommonRoutes}
-                {data.me.role === "Client" && ClientRoutes}
-                {data.me.role === "Owner" && OwnerRoutes}
+                {data.me.role === UserRole.Client && ClientRoutes}
+                {data.me.role === UserRole.Owner && OwnerRoutes}
+                {data.me.role === UserRole.Delivery && DriverRoutes}
             </Routes>
         </Router>
     );

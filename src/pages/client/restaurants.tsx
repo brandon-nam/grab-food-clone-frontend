@@ -48,7 +48,7 @@ export const Restaurants = () => {
         <div className="max-w-custom-xl mx-auto h-full mt-5 mb-5">
             <div className="w-full h-1/2 px-2 py-2 flex flex-col md:flex-row gap-3">
                 {data?.allRestaurants.restaurants?.map((restaurant) => (
-                    <RestaurantCard restaurant={restaurant} />
+                    <RestaurantCard key={restaurant.id} restaurant={restaurant} />
                 ))}
             </div>
 
